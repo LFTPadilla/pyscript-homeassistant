@@ -1,0 +1,52 @@
+# Add these entities to your Home Assistant configuration.yaml
+
+input_datetime:
+  sleep_start_time:
+    name: "Sleep Start Time"
+    has_date: true
+    has_time: true
+    
+  smart_alarm_wake_time:
+    name: "Smart Alarm Wake Time"
+    has_date: true
+    has_time: true
+    
+  away_mode_time_activated:
+    name: "Away Mode Time Activated"
+    has_date: true
+    has_time: true
+
+input_boolean:
+  smart_alarm_enabled:
+    name: "Smart Alarm Enabled"
+    initial: true
+    
+  gentle_wake_up_active:
+    name: "Gentle Wake-up Active"
+    initial: false
+
+input_number:
+  preferred_sleep_hours:
+    name: "Preferred Sleep Hours"
+    min: 7
+    max: 10
+    step: 0.5
+    initial: 8.25
+    unit_of_measurement: "hours"
+    
+  wake_up_light_brightness:
+    name: "Wake-up Light Brightness"
+    min: 1
+    max: 100
+    step: 1
+    initial: 30
+    unit_of_measurement: "%"
+
+input_select:
+  wake_up_style:
+    name: "Wake-up Style"
+    options:
+      - "Gentle and Gradual"
+      - "Standard"
+      - "Quick and Bright"
+    initial: "Gentle and Gradual"

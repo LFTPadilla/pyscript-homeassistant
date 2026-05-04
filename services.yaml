@@ -1,0 +1,110 @@
+light_fading:
+  name: Fade Lights
+  description: desc
+  fields:
+    entity_id:
+      description: The light that will be faded.
+      example: light.bedroom_light
+    sleep_time:
+      description: Minutes over which you might want to fade a light
+      example: 5
+
+notify_coco:
+  name: Notify Coco
+  description: >
+    Unified notification — push + optional TTS.
+    Push always sent. TTS respects house mode unless critical=True (emergency override).
+  fields:
+    message:
+      description: Notification body text
+      required: true
+      example: "Hello from Coco!"
+    title:
+      description: Notification title
+      default: "Coco 🏠"
+      example: "Coco 🏠"
+    target:
+      description: "Target device: felipe_phone, tablet, watch, or valentina_phone"
+      default: felipe_phone
+      selector:
+        select:
+          options:
+            - felipe_phone
+            - tablet
+            - watch
+            - valentina_phone
+            - all
+    speak:
+      description: Also announce via OpenAI TTS on Google Speaker (house mode aware)
+      default: false
+      selector:
+        boolean:
+    speak_lang:
+      description: Language for TTS
+      default: en
+      example: es
+    speak_volume:
+      description: Volume 0.0–1.0 for TTS (may be capped by house mode policy)
+      default: 0.5
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.1
+    critical:
+      description: High-priority push AND force TTS even in silent house modes
+      default: false
+      selector:
+        boolean:
+
+speak:
+  name: Speak (Google Translate)
+  description: >
+    Text-to-speech via Google Translate + Chime TTS.
+    Respects house mode TTS policy — silent in Sleep, Away, Cine, Reading, Meditation, Hug.
+  fields:
+    msg:
+      description: Message to speak
+      required: true
+      example: "Hello world"
+    lang:
+      description: Language code for TTS
+      default: en
+      example: es
+    force:
+      description: Bypass house mode restrictions (for emergencies)
+      default: false
+      selector:
+        boolean:
+
+speak_openai:
+  name: Speak (OpenAI TTS)
+  description: >
+    High-quality OpenAI TTS on Google Speaker.
+    Respects house mode TTS policy — silent in Sleep, Away, Cine, Reading, Meditation, Hug.
+    Volume is capped per mode (e.g. Night ≤ 0.4).
+  fields:
+    msg:
+      description: Message to speak
+      required: true
+      example: "Good morning!"
+    lang:
+      description: Language code for TTS
+      default: es
+      example: en
+    volume:
+      description: Volume 0.0–1.0 (may be capped by house mode policy)
+      default: 0.5
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.1
+    voice:
+      description: Voice type (reserved for future use)
+      default: male
+    force:
+      description: Bypass house mode restrictions (for emergencies / alarm wake-up)
+      default: false
+      selector:
+        boolean:

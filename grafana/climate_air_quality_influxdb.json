@@ -1,0 +1,203 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB",
+      "label": "InfluxDB",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.x" },
+    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "10.x" },
+    { "type": "panel", "id": "stat", "name": "Stat", "version": "10.x" },
+    { "type": "datasource", "id": "influxdb", "name": "InfluxDB", "version": "1.x" }
+  ],
+  "title": "Climate & Air Quality (InfluxDB)",
+  "uid": "climate-air-quality-influx",
+  "timezone": "",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["10s","30s","1m","5m","15m","1h"] },
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "pluginId": "influxdb",
+        "query": "influxdb",
+        "current": { "selected": false, "text": "InfluxDB", "value": "${DS_INFLUXDB}" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Temperature by Location (°C)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "celsius" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "alias": "Bathroom", "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='bathroom_sensor_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "B", "rawQuery": true, "alias": "Kitchen",  "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='espkitchen_kitchen_room_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "C", "rawQuery": true, "alias": "Desktop",  "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='espdesktop_ath_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "D", "rawQuery": true, "alias": "BMP",      "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='espdesktop_bmp_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "E", "rawQuery": true, "alias": "Outdoor",  "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='exterior_temp_hum_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "F", "rawQuery": true, "alias": "Screen",   "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='t_h_sensor_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Humidity by Location (%)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 9 },
+      "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "alias": "Bathroom", "query": "SELECT mean(\"value\") FROM \"%\" WHERE (\"entity_id\"='bathroom_sensor_humidity') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "B", "rawQuery": true, "alias": "Kitchen",  "query": "SELECT mean(\"value\") FROM \"%\" WHERE (\"entity_id\"='espkitchen_kitchen_room_humidity') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "C", "rawQuery": true, "alias": "Desktop",  "query": "SELECT mean(\"value\") FROM \"%\" WHERE (\"entity_id\"='espdesktop_ath_humidity') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "D", "rawQuery": true, "alias": "Outdoor",  "query": "SELECT mean(\"value\") FROM \"%\" WHERE (\"entity_id\"='exterior_temp_hum_humidity') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "E", "rawQuery": true, "alias": "Screen",   "query": "SELECT mean(\"value\") FROM \"%\" WHERE (\"entity_id\"='t_h_sensor_humidity') AND $timeFilter GROUP BY time($__interval) fill(null)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Pressure (hPa)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 17 },
+      "fieldConfig": { "defaults": { "unit": "pressurehpa" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "alias": "BMP", "query": "SELECT mean(\"value\") FROM \"hPa\" WHERE (\"entity_id\"='espdesktop_bmp_pressure') AND $timeFilter GROUP BY time($__interval) fill(null)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Air Quality Index (AQI)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 17 },
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "alias": "AQI", "query": "SELECT mean(\"value\") FROM \"state\" WHERE (\"entity_id\"='espdesktop_ens160_air_quality_index') AND $timeFilter GROUP BY time($__interval) fill(null)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "eCO2 (ppm) & TVOC (ppb)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 23 },
+      "fieldConfig": {
+        "defaults": { "unit": "ppm" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "TVOC" }, "properties": [ { "id": "unit", "value": "ppb" } ] }
+        ]
+      },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "alias": "eCO2", "query": "SELECT mean(\"value\") FROM \"ppm\" WHERE (\"entity_id\"='espdesktop_ens160_eco2') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "B", "rawQuery": true, "alias": "TVOC", "query": "SELECT mean(\"value\") FROM \"ppb\" WHERE (\"entity_id\"='espdesktop_ens160_total_volatile_organic_compounds') AND $timeFilter GROUP BY time($__interval) fill(null)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Particulates (μg/m³): PM1 / PM2.5 / PM10",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 31 },
+      "fieldConfig": { "defaults": { "unit": "µg/m³" }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM /^(µ|μ)g\\/m³$/ WHERE (\"entity_id\"='espdesktop_pm_1_0_m') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "alias": "PM1"
+        },
+        {
+          "refId": "B",
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM /^(µ|μ)g\\/m³$/ WHERE (\"entity_id\"='espdesktop_pm_2_5_m') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "alias": "PM2.5"
+        },
+        {
+          "refId": "C",
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM /^(µ|μ)g\\/m³$/ WHERE (\"entity_id\"='espdesktop_pm_10_m') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "alias": "PM10"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Bathroom Humidity vs Fan Speed",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 39 },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Humidity" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "custom.axisPlacement", "value": "left" } ] },
+          { "matcher": { "id": "byName", "options": "Fan Speed" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "custom.axisPlacement", "value": "right" } ] }
+        ]
+      },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "alias": "Bath RH", "query": "SELECT mean(\"value\") FROM \"%\" WHERE (\"entity_id\"='bathroom_sensor_humidity') AND $timeFilter GROUP BY time($__interval) fill(null)" },
+        { "refId": "B", "rawQuery": true, "alias": "Fan",     "query": "SELECT mean(\"value\") FROM \"state\" WHERE (\"entity_id\"='bathroom_esp_fan_speed') AND $timeFilter GROUP BY time($__interval) fill(null)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Water Temperature (°C) — Kitchen",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 47 },
+      "fieldConfig": { "defaults": { "unit": "celsius" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "alias": "Water", "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='espkitchen_water_temperature_sensor') AND $timeFilter GROUP BY time($__interval) fill(null)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Indoor vs Outdoor Temperature",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 47 },
+      "fieldConfig": { "defaults": { "unit": "celsius" }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "rawQuery": true, "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='espdesktop_ath_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)", "alias": "Indoor (Desktop)" },
+        { "refId": "B", "rawQuery": true, "query": "SELECT mean(\"value\") FROM \"°C\" WHERE (\"entity_id\"='exterior_temp_hum_temperature') AND $timeFilter GROUP BY time($__interval) fill(null)", "alias": "Outdoor" }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Current Temperature (Desktop)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 53 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "fieldConfig": { "defaults": { "unit": "celsius" }, "overrides": [] },
+      "targets": [ { "refId": "A", "rawQuery": true, "alias": "Desktop", "query": "SELECT last(\"value\") FROM \"°C\" WHERE (\"entity_id\"='espdesktop_ath_temperature') AND $timeFilter" } ]
+    },
+    {
+      "type": "stat",
+      "title": "Current Humidity (Desktop)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 53 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
+      "targets": [ { "refId": "A", "rawQuery": true, "alias": "Desktop", "query": "SELECT last(\"value\") FROM \"%\" WHERE (\"entity_id\"='espdesktop_ath_humidity') AND $timeFilter" } ]
+    },
+    {
+      "type": "stat",
+      "title": "Current eCO2 (ppm)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 53 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "fieldConfig": { "defaults": { "unit": "ppm" }, "overrides": [] },
+      "targets": [ { "refId": "A", "rawQuery": true, "alias": "eCO2", "query": "SELECT last(\"value\") FROM \"ppm\" WHERE (\"entity_id\"='espdesktop_ens160_eco2') AND $timeFilter" } ]
+    },
+    {
+      "type": "stat",
+      "title": "Current PM2.5 (μg/m³)",
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 53 },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false } },
+      "fieldConfig": { "defaults": { "unit": "µg/m³" }, "overrides": [] },
+      "targets": [ { "refId": "A", "rawQuery": true, "alias": "PM2.5", "query": "SELECT last(\"value\") FROM /^(µ|μ)g\\/m³$/ WHERE (\"entity_id\"='espdesktop_pm_2_5_m') AND $timeFilter" } ]
+    }
+  ]
+}
