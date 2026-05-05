@@ -1,3 +1,7 @@
+# Secrets — never commit
+.env
+reminders_config.py
+
 # Python cache files
 __pycache__/
 *.py[cod]
