@@ -6,7 +6,7 @@ def changed_house_mode(value=None, old_value=None):
     log.warning(f"changed_house_mode started, mode: {input_select.house_mode}")
 
     # Remember mode before Away (UI dropdown or automations, not only the away button)
-    if input_select.house_mode == "Away" and old_value not in (None, "Away"):
+    if input_select.house_mode == "Away" and old_value not in (None, "Away", "unavailable", "unknown"):
         input_text.previous_house_mode = old_value
 
     # Sleep: all lights/fans off before any TTS or cover actions (instant dark)
@@ -264,50 +264,58 @@ def restore_last_mode():
 
 @state_trigger("input_boolean.cine_mode == 'on'")
 def cine_button_triggered():
-    input_text.previous_house_mode = input_select.house_mode
+    if input_select.house_mode != 'Away':
+        input_text.previous_house_mode = input_select.house_mode
     input_boolean.cine_mode = 'off'
     input_select.house_mode = 'Cine'
 
 @state_trigger("input_boolean.day_mode == 'on'")
 def day_button_triggered():
-    input_text.previous_house_mode = input_select.house_mode
+    if input_select.house_mode != 'Away':
+        input_text.previous_house_mode = input_select.house_mode
     input_boolean.day_mode = 'off'
     input_select.house_mode = 'Day'
 
 @state_trigger("input_boolean.friends_mode == 'on'")
 def friends_button_triggered():
-    input_text.previous_house_mode = input_select.house_mode
+    if input_select.house_mode != 'Away':
+        input_text.previous_house_mode = input_select.house_mode
     input_boolean.friends_mode = 'off'
     input_select.house_mode = 'Friends'
 
 @state_trigger("input_boolean.meditation_mode == 'on'")
 def meditation_button_triggered():
-    input_text.previous_house_mode = input_select.house_mode
+    if input_select.house_mode != 'Away':
+        input_text.previous_house_mode = input_select.house_mode
     input_boolean.meditation_mode = 'off'
     input_select.house_mode = 'Meditation'
 
 @state_trigger("input_boolean.hug_mode == 'on'")
 def hug_button_triggered():
-    input_text.previous_house_mode = input_select.house_mode
+    if input_select.house_mode != 'Away':
+        input_text.previous_house_mode = input_select.house_mode
     input_boolean.hug_mode = 'off'
     input_select.house_mode = 'Hug'
 
 @state_trigger("input_boolean.night_mode == 'on'")
 def night_button_triggered():
-    input_text.previous_house_mode = input_select.house_mode
+    if input_select.house_mode != 'Away':
+        input_text.previous_house_mode = input_select.house_mode
     input_boolean.night_mode = 'off'
     input_select.house_mode = 'Night'
 
 @state_trigger("input_boolean.reading_mode == 'on'")
 def reading_button_triggered():
-    input_text.previous_house_mode = input_select.house_mode
+    if input_select.house_mode != 'Away':
+        input_text.previous_house_mode = input_select.house_mode
     input_boolean.reading_mode = 'off'
     input_select.house_mode = 'Reading'
 
 @state_trigger("input_boolean.sleep_mode == 'on'")
 def sleep_button_triggered():
     previous_mode = input_select.house_mode
-    input_text.previous_house_mode = previous_mode
+    if previous_mode != 'Away':
+        input_text.previous_house_mode = previous_mode
     input_boolean.sleep_mode = 'off'
 
     # If already in Sleep, re-run the shutdown actions explicitly.
@@ -406,6 +414,9 @@ def smart_arrival_detection():
 
         # 6. Restore previous mode (or default to Day)
         previous_mode = state.get("input_text.previous_house_mode") or "Day"
+        if previous_mode in ("Away", "unavailable", "unknown"):
+            log.warning(f"Smart arrival: previous_house_mode was {previous_mode}, defaulting to Day")
+            previous_mode = "Day"
         input_select.house_mode = previous_mode
         log.info(f"Smart arrival: Restored house mode to {previous_mode}. Greeting: {welcome_msg}")
 
