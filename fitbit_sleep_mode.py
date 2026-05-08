@@ -17,7 +17,7 @@ Fitbit tokens: ~/.openclaw/workspace/skills/fitbit/tokens.json
 import json, urllib.request, urllib.parse, urllib.error, base64, os
 from datetime import date, timedelta, datetime
 
-FITBIT_TOKENS_PATH = "/home/felipe/.openclaw/workspace/skills/fitbit/tokens.json"
+FITBIT_TOKENS_PATH = "/home/node/.openclaw/workspace/skills/fitbit/tokens.json"
 
 # Sleep thresholds
 EXCELLENT_HOURS   = 7.5

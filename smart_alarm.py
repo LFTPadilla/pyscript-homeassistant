@@ -3,7 +3,7 @@ import random, json, urllib.request, urllib.parse, urllib.error, base64
 
 # ── Fitbit helpers (embedded to avoid cross-file import issues in pyscript) ───
 
-_FITBIT_TOKENS_PATH = "/home/felipe/.openclaw/workspace/skills/fitbit/tokens.json"
+_FITBIT_TOKENS_PATH = "/home/node/.openclaw/workspace/skills/fitbit/tokens.json"
 
 def _fitbit_load_tokens():
     with open(_FITBIT_TOKENS_PATH) as f:
